@@ -1,0 +1,15 @@
+version: '2'
+services:
+    micro1-postgresql:
+        image: postgres:9.6.5
+        container_name: micro1-postgresql
+        volumes:
+            - micro1_postgresql_volume:/var/lib/postgresql/data/
+        environment:
+            - POSTGRES_USER=micro1
+            - POSTGRES_PASSWORD=
+        ports:
+            - 5433:5432
+volumes:
+  micro1_postgresql_volume:
+      external: true

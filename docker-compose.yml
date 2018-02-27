@@ -1,0 +1,91 @@
+version: '2'
+
+services:
+  nginx:
+    image: blacklabelops/nginx
+    container_name: nginx_server
+    restart: unless-stopped
+    ports:
+      - '80:80'
+    environment:
+      - 'SERVER1PROXY_APPLICATION=jhipster-registry'
+      - 'SERVER1SERVER_NAME=registry-local.nellmedina.com'
+      - 'SERVER1REVERSE_PROXY_LOCATION1=/'
+      - 'SERVER1REVERSE_PROXY_PASS1=http://jhipster-registry:8761'
+      - 'SERVER2PROXY_APPLICATION=gateway1-app'
+      - 'SERVER2SERVER_NAME=api-local.nellmedina.com'
+      - 'SERVER2REVERSE_PROXY_LOCATION1=/'
+      - 'SERVER2REVERSE_PROXY_PASS1=http://gateway1-app:8080'
+  jhipster-registry:
+    extends:
+      file: ./jhipster/jhipster-registry.yml
+      service: jhipster-registry
+    environment:
+      - SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS=file:./central-config/docker-config/
+  gateway1-app:
+    image: gateway1
+    container_name: gateway1-app
+    environment:
+        - SPRING_PROFILES_ACTIVE=dev,swagger
+        - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://admin:$${jhipster.registry.password}@jhipster-registry:8761/eureka
+        - SPRING_CLOUD_CONFIG_URI=http://admin:$${jhipster.registry.password}@jhipster-registry:8761/config
+        - SPRING_DATASOURCE_URL=jdbc:postgresql://gateway1-postgresql:5432/gateway1
+        # For keycloak to work, you need to add '127.0.0.1 keycloak' to your hosts file
+        - SECURITY_OAUTH2_CLIENT_ACCESS_TOKEN_URI=https://keycloak.nellmedina.com/auth/realms/jhipster/protocol/openid-connect/token
+        - SECURITY_OAUTH2_CLIENT_USER_AUTHORIZATION_URI=https://keycloak.nellmedina.com/auth/realms/jhipster/protocol/openid-connect/auth
+        - SECURITY_OAUTH2_RESOURCE_USER_INFO_URI=https://keycloak.nellmedina.com/auth/realms/jhipster/protocol/openid-connect/userinfo
+        - SECURITY_OAUTH2_RESOURCE_TOKEN_INFO_URI=https://keycloak.nellmedina.com/auth/realms/jhipster/protocol/openid-connect/token/introspect
+        - SECURITY_OAUTH2_RESOURCE_JWT_KEY_URI=https://keycloak.nellmedina.com/auth/realms/jhipster
+        - JHIPSTER_SLEEP=30 # gives time for the JHipster Registry to boot before the application
+        - SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS=kafka
+        - SPRING_CLOUD_STREAM_KAFKA_BINDER_ZK_NODES=zookeeper
+    ports:
+        - 8080:8080
+  micro1-app:
+    image: micro1
+    container_name: micro1-app
+    environment:
+        - SPRING_PROFILES_ACTIVE=dev,swagger
+        - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://admin:$${jhipster.registry.password}@jhipster-registry:8761/eureka
+        - SPRING_CLOUD_CONFIG_URI=http://admin:$${jhipster.registry.password}@jhipster-registry:8761/config
+        - SPRING_DATASOURCE_URL=jdbc:postgresql://micro1-postgresql:5432/micro1
+        - SECURITY_OAUTH2_CLIENT_ACCESS_TOKEN_URI=https://keycloak.nellmedina.com/auth/realms/jhipster/protocol/openid-connect/token
+        - SECURITY_OAUTH2_CLIENT_USER_AUTHORIZATION_URI=https://keycloak.nellmedina.com/auth/realms/jhipster/protocol/openid-connect/auth
+        - SECURITY_OAUTH2_RESOURCE_USER_INFO_URI=https://keycloak.nellmedina.com/auth/realms/jhipster/protocol/openid-connect/userinfo
+        - SECURITY_OAUTH2_RESOURCE_TOKEN_INFO_URI=https://keycloak.nellmedina.com/auth/realms/jhipster/protocol/openid-connect/token/introspect
+        - SECURITY_OAUTH2_RESOURCE_JWT_KEY_URI=https://keycloak.nellmedina.com/auth/realms/jhipster
+        - JHIPSTER_SLEEP=40 # gives time for the JHipster Registry to boot before the application
+        - SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS=kafka
+        - SPRING_CLOUD_STREAM_KAFKA_BINDER_ZK_NODES=zookeeper
+    ports:
+        - 8081:8080
+  gateway1-postgresql:
+    extends:
+      file: jhipster/gateway1/postgresql.yml
+      service: gateway1-postgresql
+  micro1-postgresql:
+    extends:
+      file: jhipster/micro1/postgresql.yml
+      service: micro1-postgresql
+  kafka:
+    extends:
+      file: ./jhipster/kafka.yml
+      service: kafka
+    environment:
+      - KAFKA_ADVERTISED_HOST_NAME=kafka
+  zookeeper:
+    extends:
+      file: ./jhipster/kafka.yml
+      service: zookeeper
+  gateway1-hazelcast-management-center:
+    image: hazelcast/management-center:3.9.1
+    container_name: gateway1-hazelcast
+    restart: unless-stopped
+    ports:
+      - 8180:8080
+
+volumes:
+  gateway1_postgresql_volume:
+      external: true
+  micro1_postgresql_volume:
+      external: true
