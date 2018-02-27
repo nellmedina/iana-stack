@@ -1,18 +1,40 @@
 
-#### Spring Cloud with the help of JHipster secured with Keycloak OAuth2
+### Docker compose file to run JHipster microservices secured by Keycloak OAuth2
 
-Overview of containers created
+Overview of containers created where most of it where auto-generate from [JHipister Starter](https://start.jhipster.tech/).
 
 - nginx
-- jhipster-registry
-- jhipster-gateway1
-- jhipster-micro1
+- [jhipster-registry](https://github.com/nellmedina/jhipster-registry)
+- [gateway1](https://github.com/nellmedina/gateway1)
+- [micro1](https://github.com/nellmedina/micro1)
 - postgres
 - kafka
 - zookeeper
 - hazelcast
 
-Once all is up, then nginx configuration needs a bit of a tweak
+#### Execute the Docker Compose file
+
+```yml
+# create a local volume for the gateway and micro1
+docker volume create gateway1_postgresql_volume
+docker volume create micro1_postgresql_volume
+
+# if projects changed, below needs to be build to its latest Docker image by doing `mvn verify -Pprod dockerfile:build`
+# for registry, docker build it like `mvn verify -Pprod docker:build`
+- jhipster-registry
+- gateway1
+- micro1
+
+# stop and delete the container to be updated so it will get agin the latest build
+Example:
+docker stop gateway1
+docker rm gateway1
+
+# finally, run it
+docker-compose up
+```
+
+If Nginx not redirecting properly, then adjust it a bit.
 
 ```bash
 # go inside the container
@@ -33,20 +55,11 @@ location ~* ^/(.*) {
   port_in_redirect off;
 
 }
+
+# restart nginx_server
+docker restart nginx_server
 ```
 
-```yml
-# create a local volume for the gateway and micro1
-docker volume create gateway1_postgresql_volume
-docker volume create micro1_postgresql_volume
+Open the registry at http://registry-local.nellmedina.com/ and gateway at http://api-local.nellmedina.com/ with username and password as admin admin.
 
-# if projects changed, below needs to be build to its latest Docker image by doing `mvn verify -Pprod dockerfile:build`
-- jhipster-registry
-- jhipster-gateway
-- jhipster-micro1
-
-# finally, run it
-docker-compose up
-```
-
-Open the registry at http://registry-local.nellmedina.com/ and gateway at http://api-local.nellmedina.com/ with username and password as admin admin
+Note that for OAuth2 authentication will be redirected to Keycloak login page.
