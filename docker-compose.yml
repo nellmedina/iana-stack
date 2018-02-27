@@ -6,7 +6,11 @@ services:
     container_name: nginx_server
     restart: unless-stopped
     ports:
+      - '443:443'
       - '80:80'
+    volumes:
+      - letsencrypt_certificates:/etc/letsencrypt
+      - letsencrypt_challenges:/var/www/letsencrypt
     environment:
       - 'TZ=${IANA_TIME_ZONE}'
       - 'NGINX_REDIRECT_PORT80=${IANA_PORT80_REDIRECT}'
