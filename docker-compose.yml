@@ -8,14 +8,28 @@ services:
     ports:
       - '80:80'
     environment:
-      - 'SERVER1PROXY_APPLICATION=jhipster-registry'
-      - 'SERVER1SERVER_NAME=registry-local.nellmedina.com'
+      - 'TZ=${IANA_TIME_ZONE}'
+      - 'NGINX_REDIRECT_PORT80=${IANA_PORT80_REDIRECT}'
+      - 'SERVER1PROXY_APPLICATION=registry'
+      - 'SERVER1SERVER_NAME=${REGISTRY_DOMAIN_NAME}'
       - 'SERVER1REVERSE_PROXY_LOCATION1=/'
       - 'SERVER1REVERSE_PROXY_PASS1=http://jhipster-registry:8761'
-      - 'SERVER2PROXY_APPLICATION=gateway1-app'
-      - 'SERVER2SERVER_NAME=api-local.nellmedina.com'
+      - 'SERVER1HTTPS_ENABLED=${REGISTRY_HTTPS}'
+      - 'SERVER1HTTP_ENABLED=${REGISTRY_HTTP}'
+      - 'SERVER1LETSENCRYPT_CERTIFICATES=${REGISTRY_HTTPS}'
+      - 'SERVER1CERTIFICATE_FILE=/etc/letsencrypt/live/${REGISTRY_DOMAIN_NAME_PARENT}/fullchain.pem'
+      - 'SERVER1CERTIFICATE_KEY=/etc/letsencrypt/live/${REGISTRY_DOMAIN_NAME_PARENT}/privkey.pem'
+      - 'SERVER1CERTIFICATE_TRUSTED=/etc/letsencrypt/live/${REGISTRY_DOMAIN_NAME_PARENT}/fullchain.pem'
+      - 'SERVER2PROXY_APPLICATION=gateway'
+      - 'SERVER2SERVER_NAME=${GATEWAY_DOMAIN_NAME}'
       - 'SERVER2REVERSE_PROXY_LOCATION1=/'
       - 'SERVER2REVERSE_PROXY_PASS1=http://gateway1-app:8080'
+      - 'SERVER2HTTPS_ENABLED=${GATEWAY_HTTPS}'
+      - 'SERVER2HTTP_ENABLED=${GATEWAY_HTTP}'
+      - 'SERVER2LETSENCRYPT_CERTIFICATES=${GATEWAY_HTTPS}'
+      - 'SERVER2CERTIFICATE_FILE=/etc/letsencrypt/live/${GATEWAY_DOMAIN_NAME_PARENT}/fullchain.pem'
+      - 'SERVER2CERTIFICATE_KEY=/etc/letsencrypt/live/${GATEWAY_DOMAIN_NAME_PARENT}/privkey.pem'
+      - 'SERVER2CERTIFICATE_TRUSTED=/etc/letsencrypt/live/${GATEWAY_DOMAIN_NAME_PARENT}/fullchain.pem'
   jhipster-registry:
     extends:
       file: ./jhipster/jhipster-registry.yml
@@ -88,4 +102,8 @@ volumes:
   gateway1_postgresql_volume:
       external: true
   micro1_postgresql_volume:
+      external: true
+  letsencrypt_certificates:
+      external: true
+  letsencrypt_challenges:
       external: true
