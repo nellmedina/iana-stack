@@ -23,7 +23,7 @@ services:
     environment:
       - SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS=file:./central-config/docker-config/
   gateway1-app:
-    image: gateway1
+    image: nellmedina/gateway1
     container_name: gateway1-app
     environment:
         - SPRING_PROFILES_ACTIVE=dev,swagger
@@ -42,7 +42,7 @@ services:
     ports:
         - 8080:8080
   micro1-app:
-    image: micro1
+    image: nellmedina/micro1
     container_name: micro1-app
     environment:
         - SPRING_PROFILES_ACTIVE=dev,swagger

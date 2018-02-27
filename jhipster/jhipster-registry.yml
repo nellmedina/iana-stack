@@ -1,7 +1,7 @@
 version: '2'
 services:
     jhipster-registry:
-        image: jhipsterregistry
+        image: nellmedina/jhipsterregistry
         container_name: jhipster-registry
         restart: unless-stopped
         volumes:

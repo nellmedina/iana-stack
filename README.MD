@@ -1,7 +1,7 @@
 
 ### Docker compose file to run JHipster microservices secured by Keycloak OAuth2
 
-Overview of containers created where most of it where auto-generate from [JHipister Starter](https://start.jhipster.tech/).
+Overview of containers created where most of it where auto-generated from [JHipister Starter](https://start.jhipster.tech/).
 
 - nginx
 - [jhipster-registry](https://github.com/nellmedina/jhipster-registry)
@@ -15,7 +15,7 @@ Overview of containers created where most of it where auto-generate from [JHipis
 #### Execute the Docker Compose file
 
 ```yml
-# create a local volume for the gateway and micro1
+# create a local volume for the microservices named gateway1 and micro1
 docker volume create gateway1_postgresql_volume
 docker volume create micro1_postgresql_volume
 
@@ -62,4 +62,4 @@ docker restart nginx_server
 
 Open the registry at http://registry-local.nellmedina.com/ and gateway at http://api-local.nellmedina.com/ with username and password as admin admin.
 
-Note that for OAuth2 authentication will be redirected to Keycloak login page.
+Note that for OAuth2 authentication, login page will be the Keycloak and redirected back to app with Token if successfully authenticated.
