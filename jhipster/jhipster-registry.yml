@@ -3,7 +3,6 @@ services:
     jhipster-registry:
         image: nellmedina/jhipsterregistry
         container_name: jhipster-registry
-        restart: unless-stopped
         volumes:
             - ./central-server-config:/central-config
         # When run with the "dev" Spring profile, the JHipster Registry will
