@@ -43,6 +43,7 @@ services:
   gateway1-app:
     image: nellmedina/gateway1
     container_name: gateway1-app
+    restart: unless-stopped
     environment:
         - SPRING_PROFILES_ACTIVE=dev,swagger
         - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://admin:$${jhipster.registry.password}@jhipster-registry:8761/eureka
@@ -62,6 +63,7 @@ services:
   micro1-app:
     image: nellmedina/micro1
     container_name: micro1-app
+    restart: unless-stopped
     environment:
         - SPRING_PROFILES_ACTIVE=dev,swagger
         - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://admin:$${jhipster.registry.password}@jhipster-registry:8761/eureka

@@ -3,6 +3,7 @@ services:
     micro1-postgresql:
         image: postgres:9.6.5
         container_name: micro1-postgresql
+        restart: unless-stopped
         volumes:
             - micro1_postgresql_volume:/var/lib/postgresql/data/
         environment:
